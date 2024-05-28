@@ -72,6 +72,9 @@ class fruit(object):
         random.seed(self.seed)
         self.x = ((random.randint(0,WIDTH//40))*40) + 7.5
         self.y = ((random.randint(0,HEIGHT//40))*40) + 7.5
+        if self.x < 0 or self.x > 800 or self.y < 0 or self.y > 800:
+            self.random_seed()
+            self.random_place()
     
     def draw(self):
         self.random_place()
@@ -81,11 +84,13 @@ class fruit(object):
     
     def random_seed(self):
         self.seed = random.randint(0,HEIGHT**WIDTH)
+        self.random_place()
 
 def redraw_display():
     win.fill((0,0,0))
     grid.draw()
     fruit.draw()
+    print(fruit.x, fruit.y)
     snake.draw()
     pygame.display.update()
 
@@ -101,6 +106,8 @@ change = "right"
 
 while run:
     clock.tick(60)
+
+    redraw_display()
 
     for event in pygame.event.get(): # Red X exit Clause
         if event.type == pygame.QUIT:
