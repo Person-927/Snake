@@ -90,7 +90,7 @@ def redraw_display():
     win.fill((0,0,0))
     grid.draw()
     fruit.draw()
-    print(fruit.x, fruit.y)
+    # print(fruit.x, fruit.y)
     snake.draw()
     pygame.display.update()
 
