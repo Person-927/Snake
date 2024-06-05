@@ -1,23 +1,27 @@
 import pygame, random
 
 pygame.init()
+pygame.font.init()
+pygame.display.init()
 
 WIDTH, HEIGHT = 800, 800
+SQ_HEIGHT = 40
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Snake")
        
-
 class grid(object):
-    def __init__(self):
+    def __init__(self, SQ_HEIGHT):
         self.x = 0
         self.y = 0
         self.width = 40
-        self.height = 40
+        self.height = SQ_HEIGHT
         self.colour = True
 
     def draw(self):
+        top_bar = pygame.Rect(0,0, (self.width*WIDTH//self.width), self.height)
+        pygame.draw.rect(win, "white", top_bar)
         self.x = 0
-        self.y = 0
+        self.y = 0 + self.height
         for _ in range(0,HEIGHT//self.height):
             for _ in range(0, WIDTH//self.width):
                 square = pygame.Rect(self.x,self.y,self.width,self.height)
@@ -37,11 +41,13 @@ class grid(object):
 
             self.x = 0
             self.y += self.height
+        self.x = 0
+        self.y = 0
         
-class snake(object):
+class snake_part(object):
     def __init__(self):
         self.x = 5
-        self.y = 5
+        self.y = 5 + SQ_HEIGHT
         self.width = 30
         self.height = 30
         self.vel = 1
@@ -58,7 +64,6 @@ class snake(object):
         self.hitbox = [self.x, self.y, self.width, self.height]
         pygame.draw.rect(win, "blue", self.snake_head) 
         
-
 class fruit(object):
     def __init__(self):
         self.x = 7.5
@@ -72,7 +77,7 @@ class fruit(object):
         random.seed(self.seed)
         self.x = ((random.randint(0,WIDTH//40))*40) + 7.5
         self.y = ((random.randint(0,HEIGHT//40))*40) + 7.5
-        if self.x < 0 or self.x > 800 or self.y < 0 or self.y > 800:
+        if self.x < 0 or self.x > 800 or self.y < 0 + SQ_HEIGHT or self.y > 800:
             self.random_seed()
             self.random_place()
     
@@ -88,26 +93,26 @@ class fruit(object):
 
 def redraw_display():
     win.fill((0,0,0))
+    text = score_font.render("Score: " + str(score), 1, (0,0,0) )
     grid.draw()
+    win.blit(text, (5,-5))
     fruit.draw()
-    # print(fruit.x, fruit.y)
     snake.draw()
     pygame.display.update()
 
-
+### MAIN ###
 clock = pygame.time.Clock()
-
-snake = snake()
-grid = grid()
+snake = snake_part()
+grid = grid(SQ_HEIGHT)
 fruit = fruit()
+score_font = pygame.font.SysFont("comicsans", 34, True, False)
 score = 0
 run = True
+pause = False
 change = "right"
 
 while run:
     clock.tick(60)
-
-    redraw_display()
 
     for event in pygame.event.get(): # Red X exit Clause
         if event.type == pygame.QUIT:
@@ -169,12 +174,11 @@ while run:
     elif snake.x < 0:
         run = False
     
-    elif snake.y < 0:
+    elif snake.y < 0 + SQ_HEIGHT:
         run = False
     
     elif snake.y > HEIGHT - snake.height:
         run = False
-
 
     if snake.hitbox[1] < fruit.hitbox[1] + fruit.hitbox[3] and snake.hitbox[1] + snake.hitbox[3] > fruit.hitbox[1]: # Snake + Fruit hitboxes comparision
         if snake.hitbox[0] + snake.hitbox[2] > fruit.hitbox[0] and snake.hitbox[0] < fruit.hitbox[0] + fruit.hitbox[2]:
@@ -184,6 +188,18 @@ while run:
 
 
     keys = pygame.key.get_pressed() # User inputs for direction changes
+
+    if keys[pygame.K_SPACE]:
+        pause = True
+    
+    while pause:
+        keys = pygame.key.get_pressed() 
+
+        if keys[pygame.K_SPACE]:
+            pause = False
+    
+    print(pause)
+
 
     if keys[pygame.K_UP] and not snake.up and not snake.down:
         change = "up"
