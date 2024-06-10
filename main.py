@@ -50,7 +50,7 @@ class snake_part(object):
         self.y = 5 + SQ_HEIGHT
         self.width = 30
         self.height = 30
-        self.vel = 1
+        self.vel = 2
         self.target_x = 45
         self.target_y = 5
         self.up = False
@@ -108,7 +108,6 @@ fruit = fruit()
 score_font = pygame.font.SysFont("comicsans", 34, True, False)
 score = 0
 run = True
-pause = False
 change = "right"
 
 while run:
@@ -188,18 +187,6 @@ while run:
 
 
     keys = pygame.key.get_pressed() # User inputs for direction changes
-
-    if keys[pygame.K_SPACE]:
-        pause = True
-    
-    while pause:
-        keys = pygame.key.get_pressed() 
-
-        if keys[pygame.K_SPACE]:
-            pause = False
-    
-    print(pause)
-
 
     if keys[pygame.K_UP] and not snake.up and not snake.down:
         change = "up"
